@@ -26,15 +26,15 @@
         <main.basedir>${project.basedir}</main.basedir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <jdk.version>1.6</jdk.version>
+        <jdk.version>21</jdk.version>
         <target.dir>target</target.dir>
         <maven.build.timestamp.format>yyyyMMdd</maven.build.timestamp.format>
         <timestamp>${maven.build.timestamp}</timestamp>
         <extraVmArgs/>
 
-        <hazelcast.version>4.0.2</hazelcast.version>
+        <hazelcast.version>5.5.0</hazelcast.version>
 
-        <servlet.api.version>3.0.1</servlet.api.version>
+        <servlet.api.version>6.1.0</servlet.api.version>
         <junit.version>4.11</junit.version>
         <log4j.version>1.2.12</log4j.version>
 
@@ -46,9 +46,9 @@
         <maven.gpg.plugin.version>1.4</maven.gpg.plugin.version>
 
         <maven.surefire.plugin.version>2.19.1</maven.surefire.plugin.version>
-        <maven.checkstyle.plugin.version>2.15</maven.checkstyle.plugin.version>
+        <maven.checkstyle.plugin.version>3.6.0</maven.checkstyle.plugin.version>
         <maven.findbugs.plugin.version>3.0.5</maven.findbugs.plugin.version>
-        <maven.sonar.plugin.version>3.3.0.603</maven.sonar.plugin.version>
+        <maven.sonar.plugin.version>5.0.0.4389</maven.sonar.plugin.version>
         <maven.jacoco.plugin.version>0.7.9</maven.jacoco.plugin.version>
         <bytebuddy.version>1.6.12</bytebuddy.version>
         
@@ -87,10 +87,7 @@
 
     <modules>
         <module>tomcat-core</module>
-        <module>tomcat7</module>
-        <module>tomcat8</module>
-        <module>tomcat85</module>
-        <module>tomcat9</module>
+        <module>tomcat11</module>
     </modules>
 
     <repositories>
@@ -130,7 +127,7 @@
                 <configuration>
                     <redirectTestOutputToFile>true</redirectTestOutputToFile>
                     <argLine>
-                        -Xms1g -Xmx1g -XX:MaxPermSize=1024M
+                        -Xms1g -Xmx1g
                         -Dhazelcast.hidensity.check.freememory=false
                         -Dhazelcast.phone.home.enabled=false
                         -Dhazelcast.mancenter.enabled=false
@@ -159,15 +156,10 @@
     </build>
 
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents.client5/httpclient5 -->
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.3.6</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
             <version>${servlet.api.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -184,13 +176,7 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>${log4j.version}</version>
-            <scope>test</scope>
-            <optional>true</optional>
-        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -323,7 +309,7 @@
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.3</version>
+                        <version>1.7.0</version>
                         <extensions>true</extensions>
                         <configuration>
                             <serverId>release-repository</serverId>
@@ -379,7 +365,7 @@
             <properties>
                 <argLine>
                     ${extraVmArgs}
-                    -Xms1g -Xmx1g -XX:MaxPermSize=1024M
+                    -Xms1g -Xmx1g
                     -Dhazelcast.hidensity.check.freememory=false
                     -Dhazelcast.phone.home.enabled=false
                     -Dhazelcast.mancenter.enabled=false
@@ -389,10 +375,11 @@
                 </argLine>
             </properties>
             <dependencies>
+                <!-- https://mvnrepository.com/artifact/org.sonarsource.java/sonar-jacoco-listeners -->
                 <dependency>
                     <groupId>org.sonarsource.java</groupId>
                     <artifactId>sonar-jacoco-listeners</artifactId>
-                    <version>3.10</version>
+                    <version>5.14.0.18788</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>
@@ -424,7 +411,7 @@
                     </plugin>
 
                     <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
+                        <groupId>org.sonarsource.scanner.maven</groupId>
                         <artifactId>sonar-maven-plugin</artifactId>
                         <version>${maven.sonar.plugin.version}</version>
                     </plugin>
@@ -434,7 +421,7 @@
         <profile>
             <id>master</id>
             <properties>
-                <hazelcast.version>5.0-SNAPSHOT</hazelcast.version>
+                <hazelcast.version>5.5.0</hazelcast.version>
             </properties>
             <dependencies>
                 <dependency>
@@ -466,7 +453,7 @@
             </build>
         </profile>
     </profiles>
-    <distributionManagement>
+   <!-- <distributionManagement>
         <repository>
             <id>release-repository</id>
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
@@ -477,5 +464,5 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
             <uniqueVersion>false</uniqueVersion>
         </snapshotRepository>
-    </distributionManagement>
+    </distributionManagement>-->
 </project>

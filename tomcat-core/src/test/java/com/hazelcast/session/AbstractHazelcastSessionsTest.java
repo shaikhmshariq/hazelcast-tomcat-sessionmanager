@@ -5,18 +5,13 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.test.HazelcastTestSupport;
 import org.apache.catalina.Manager;
 import org.apache.catalina.session.StandardSession;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.CookieStore;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
 import org.junit.After;
 
 import java.io.IOException;
-import java.net.ServerSocket;
+import java.net.*;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 public abstract class AbstractHazelcastSessionsTest extends HazelcastTestSupport {
 
@@ -37,12 +32,17 @@ public abstract class AbstractHazelcastSessionsTest extends HazelcastTestSupport
         Hazelcast.shutdownAll();
     }
 
-    protected String executeRequest(String context, int serverPort, CookieStore cookieStore) throws Exception {
-        HttpClient client = HttpClientBuilder.create().setDefaultCookieStore(cookieStore).build();
-        HttpGet request = new HttpGet("http://localhost:" + serverPort + "/" + context);
-        HttpResponse response = client.execute(request);
-        HttpEntity entity = response.getEntity();
-        return EntityUtils.toString(entity);
+    protected String executeRequest(String context, int serverPort, CookieHandler handler) throws Exception {
+        HttpClient client = HttpClient.newBuilder()
+                .cookieHandler(handler)
+                .build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:" + serverPort + "/" + context))
+                .GET()
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        return response.body();
     }
 
     /**
@@ -52,9 +52,10 @@ public abstract class AbstractHazelcastSessionsTest extends HazelcastTestSupport
      */
     protected static String getJSessionId(CookieStore cookieStore) {
         String jSessionId = null;
-        for (Cookie cookie : cookieStore.getCookies()) {
+        for (HttpCookie cookie : cookieStore.getCookies()) {
             if ("JSESSIONID".equalsIgnoreCase(cookie.getName())) {
                 jSessionId = cookie.getValue();
+                break;
             }
         }
         return jSessionId;

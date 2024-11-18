@@ -2,9 +2,11 @@ package com.hazelcast.session;
 
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
-import org.apache.http.client.CookieStore;
-import org.apache.http.impl.client.BasicCookieStore;
 import org.junit.Test;
+
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookieStore;
 
 import static org.junit.Assert.assertEquals;
 
@@ -26,10 +28,10 @@ public abstract class AbstractSessionExpireTest extends AbstractHazelcastSession
         final int EXTRA_DELAY_IN_SECONDS = 5;
 
         initializeInstances(firstConfig, secondConfig, SESSION_TIMEOUT_IN_MINUTES);
-
-        CookieStore cookieStore = new BasicCookieStore();
-        executeRequest("write", SERVER_PORT_1, cookieStore);
-        String value = executeRequest("read", SERVER_PORT_1, cookieStore);
+        CookieHandler.setDefault(new CookieManager());
+        CookieStore cookieStore = ((CookieManager) CookieHandler.getDefault()).getCookieStore();
+        executeRequest("write", SERVER_PORT_1,CookieHandler.getDefault());
+        String value = executeRequest("read", SERVER_PORT_1,CookieHandler.getDefault());
         assertEquals("value", value);
 
         instance1.stop();
@@ -51,15 +53,15 @@ public abstract class AbstractSessionExpireTest extends AbstractHazelcastSession
         final int EXTRA_DELAY_IN_SECONDS = 5;
 
         initializeInstances("hazelcast-1.xml", "hazelcast-2.xml", GENERIC_SESSION_TIMEOUT_IN_MINUTES);
-
-        CookieStore cookieStore = new BasicCookieStore();
-        executeRequest("write", SERVER_PORT_1, cookieStore);
+        CookieHandler.setDefault(new CookieManager());
+        CookieStore cookieStore = ((CookieManager) CookieHandler.getDefault()).getCookieStore();
+        executeRequest("write", SERVER_PORT_1,CookieHandler.getDefault());
 
         String sessionId = getJSessionId(cookieStore);
         HazelcastSession session = getHazelcastSession(sessionId, instance1);
         session.setMaxInactiveInterval(SPECIFIC_SESSION_TIMEOUT_IN_MINUTES);
 
-        String value = executeRequest("read", SERVER_PORT_1, cookieStore);
+        String value = executeRequest("read", SERVER_PORT_1,CookieHandler.getDefault());
         assertEquals("value", value);
 
         instance1.stop();

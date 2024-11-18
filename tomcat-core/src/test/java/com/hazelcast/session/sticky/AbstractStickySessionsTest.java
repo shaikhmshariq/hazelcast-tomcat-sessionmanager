@@ -5,10 +5,11 @@ import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import com.hazelcast.session.AbstractHazelcastSessionsTest;
-import org.apache.http.client.CookieStore;
-import org.apache.http.impl.client.BasicCookieStore;
 import org.junit.Test;
 
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookieStore;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -19,76 +20,75 @@ public abstract class AbstractStickySessionsTest extends AbstractHazelcastSessio
 
     @Test
     public void testContextReloadSticky() throws Exception {
-        CookieStore cookieStore = new BasicCookieStore();
-        executeRequest("write", SERVER_PORT_1, cookieStore);
+        CookieHandler.setDefault(new CookieManager());
+        executeRequest("write", SERVER_PORT_1,CookieHandler.getDefault());
         System.out.println("reloading");
         instance1.reload();
         System.out.println("reloaded");
-        String value = executeRequest("read", SERVER_PORT_1, cookieStore);
+        String value = executeRequest("read", SERVER_PORT_1,CookieHandler.getDefault());
         assertEquals("value", value);
     }
 
     @Test
     public void testReadWriteRead() throws Exception {
-        CookieStore cookieStore = new BasicCookieStore();
-        String value = executeRequest("read", SERVER_PORT_1, cookieStore);
+        CookieHandler.setDefault(new CookieManager());
+        String value = executeRequest("read", SERVER_PORT_1,CookieHandler.getDefault());
         assertEquals("null", value);
 
-        executeRequest("write", SERVER_PORT_1, cookieStore);
+        executeRequest("write", SERVER_PORT_1,CookieHandler.getDefault());
 
-        value = executeRequest("read", SERVER_PORT_1, cookieStore);
+        value = executeRequest("read", SERVER_PORT_1,CookieHandler.getDefault());
         assertEquals("value", value);
     }
 
     @Test(timeout = 80000)
     public void testAttributeDistribution() throws Exception {
-        CookieStore cookieStore = new BasicCookieStore();
-        executeRequest("write", SERVER_PORT_1, cookieStore);
+        CookieHandler.setDefault(new CookieManager());
+        executeRequest("write", SERVER_PORT_1,CookieHandler.getDefault());
 
-        String value = executeRequest("read", SERVER_PORT_1, cookieStore);
+        String value = executeRequest("read", SERVER_PORT_1,CookieHandler.getDefault());
         assertEquals("value", value);
     }
 
     @Test(timeout = 80000)
     public void testAttributeRemoval() throws Exception {
-        CookieStore cookieStore = new BasicCookieStore();
-        executeRequest("write", SERVER_PORT_1, cookieStore);
+        CookieHandler.setDefault(new CookieManager());
+        executeRequest("write", SERVER_PORT_1,CookieHandler.getDefault());
 
-        String value = executeRequest("read", SERVER_PORT_1, cookieStore);
+        String value = executeRequest("read", SERVER_PORT_1,CookieHandler.getDefault());
         assertEquals("value", value);
 
-        value = executeRequest("remove", SERVER_PORT_1, cookieStore);
+        value = executeRequest("remove", SERVER_PORT_1,CookieHandler.getDefault());
         assertEquals("true", value);
 
-        value = executeRequest("read", SERVER_PORT_1, cookieStore);
+        value = executeRequest("read", SERVER_PORT_1,CookieHandler.getDefault());
         assertEquals("null", value);
     }
 
     @Test(timeout = 80000)
     public void testAttributeUpdate() throws Exception {
-        CookieStore cookieStore = new BasicCookieStore();
-        executeRequest("write", SERVER_PORT_1, cookieStore);
+        CookieHandler.setDefault(new CookieManager());
+        executeRequest("write", SERVER_PORT_1,CookieHandler.getDefault());
 
-        String value = executeRequest("read", SERVER_PORT_1, cookieStore);
+        String value = executeRequest("read", SERVER_PORT_1,CookieHandler.getDefault());
         assertEquals("value", value);
 
-        value = executeRequest("update", SERVER_PORT_1, cookieStore);
+        value = executeRequest("update", SERVER_PORT_1,CookieHandler.getDefault());
         assertEquals("true", value);
 
-        value = executeRequest("read", SERVER_PORT_1, cookieStore);
+        value = executeRequest("read", SERVER_PORT_1,CookieHandler.getDefault());
         assertEquals("value-updated", value);
     }
 
     @Test(timeout = 80000)
     public void testAttributeInvalidate() throws Exception {
+        CookieHandler.setDefault(new CookieManager());
+        executeRequest("write", SERVER_PORT_1,CookieHandler.getDefault());
 
-        CookieStore cookieStore = new BasicCookieStore();
-        executeRequest("write", SERVER_PORT_1, cookieStore);
-
-        String value = executeRequest("read", SERVER_PORT_1, cookieStore);
+        String value = executeRequest("read", SERVER_PORT_1,CookieHandler.getDefault());
         assertEquals("value", value);
 
-        value = executeRequest("invalidate", SERVER_PORT_1, cookieStore);
+        value = executeRequest("invalidate", SERVER_PORT_1,CookieHandler.getDefault());
         assertEquals("true", value);
 
         HazelcastInstance instance = HazelcastClient.newHazelcastClient();
@@ -113,46 +113,47 @@ public abstract class AbstractStickySessionsTest extends AbstractHazelcastSessio
 
     @Test(timeout = 80000)
     public void testAttributeNames() throws Exception {
-        CookieStore cookieStore = new BasicCookieStore();
-        executeRequest("read", SERVER_PORT_1, cookieStore);
+        CookieHandler.setDefault(new CookieManager());
 
-        String commaSeparatedAttributeNames = executeRequest("names", SERVER_PORT_1, cookieStore);
+        executeRequest("read", SERVER_PORT_1,CookieHandler.getDefault());
+
+        String commaSeparatedAttributeNames = executeRequest("names", SERVER_PORT_1,CookieHandler.getDefault());
 
         //no name should be created
         assertEquals("", commaSeparatedAttributeNames);
 
-        executeRequest("write", SERVER_PORT_1, cookieStore);
+        executeRequest("write", SERVER_PORT_1,CookieHandler.getDefault());
 
-        commaSeparatedAttributeNames = executeRequest("names", SERVER_PORT_1, cookieStore);
+        commaSeparatedAttributeNames = executeRequest("names", SERVER_PORT_1,CookieHandler.getDefault());
         assertEquals("key", commaSeparatedAttributeNames);
     }
 
     @Test(timeout = 80000)
     public void test_isNew() throws Exception {
-        CookieStore cookieStore = new BasicCookieStore();
+        CookieHandler.setDefault(new CookieManager());
 
-        assertEquals("true", executeRequest("isNew", SERVER_PORT_1, cookieStore));
-        assertEquals("false", executeRequest("isNew", SERVER_PORT_1, cookieStore));
+        assertEquals("true", executeRequest("isNew", SERVER_PORT_1,CookieHandler.getDefault()));
+        assertEquals("false", executeRequest("isNew", SERVER_PORT_1,CookieHandler.getDefault()));
     }
 
     @Test(timeout = 80000)
     public void test_LastAccessTime() throws Exception {
-        CookieStore cookieStore = new BasicCookieStore();
-        String lastAccessTime1 = executeRequest("lastAccessTime", SERVER_PORT_1, cookieStore);
-        executeRequest("lastAccessTime", SERVER_PORT_1, cookieStore);
-        String lastAccessTime2 = executeRequest("lastAccessTime", SERVER_PORT_1, cookieStore);
+        CookieHandler.setDefault(new CookieManager());
+        String lastAccessTime1 = executeRequest("lastAccessTime", SERVER_PORT_1,CookieHandler.getDefault());
+        executeRequest("lastAccessTime", SERVER_PORT_1,CookieHandler.getDefault());
+        String lastAccessTime2 = executeRequest("lastAccessTime", SERVER_PORT_1,CookieHandler.getDefault());
 
         assertNotEquals(lastAccessTime1, lastAccessTime2);
     }
 
     @Test(timeout = 80000)
     public void testFailoverWithNoStaleSession() throws Exception {
-        CookieStore cookieStore = new BasicCookieStore();
-        String value = executeRequest("read", SERVER_PORT_1, cookieStore);
+        CookieHandler.setDefault(new CookieManager());
+        String value = executeRequest("read", SERVER_PORT_1,CookieHandler.getDefault());
         assertEquals("null", value);
 
-        executeRequest("write", SERVER_PORT_1, cookieStore);
-        String oldSessionId = executeRequest("get-session-id", SERVER_PORT_1, cookieStore);
+        executeRequest("write", SERVER_PORT_1,CookieHandler.getDefault());
+        String oldSessionId = executeRequest("get-session-id", SERVER_PORT_1,CookieHandler.getDefault());
 
         instance1.stop();
 
@@ -161,10 +162,10 @@ public abstract class AbstractStickySessionsTest extends AbstractHazelcastSessio
             hzInstance1.shutdown();
         }
 
-        String newSessionId = executeRequest("get-session-id", SERVER_PORT_2, cookieStore);
+        String newSessionId = executeRequest("get-session-id", SERVER_PORT_2,CookieHandler.getDefault());
         //The session id should be different after failover because of the changed jvmRoute
         assertNotEquals(oldSessionId, newSessionId);
-        value = executeRequest("read", SERVER_PORT_2, cookieStore);
+        value = executeRequest("read", SERVER_PORT_2,CookieHandler.getDefault());
         assertEquals("value", value);
 
     }
@@ -172,10 +173,11 @@ public abstract class AbstractStickySessionsTest extends AbstractHazelcastSessio
     @Test(timeout = 80000)
     public void testFailoverWithNoNewSession() throws Exception {
         //given
-        final CookieStore cookieStore = new BasicCookieStore();
-        final CookieStore cookieStore2 = new BasicCookieStore();
-        executeRequest("write", SERVER_PORT_1, cookieStore);
-        executeRequest("write", SERVER_PORT_1, cookieStore2);
+        CookieHandler manager1 = new CookieManager();
+        CookieHandler manager2 = new CookieManager();
+
+        executeRequest("write", SERVER_PORT_1, manager1);
+        executeRequest("write", SERVER_PORT_1, manager2);
 
         //when
         instance1.stop();
@@ -189,8 +191,8 @@ public abstract class AbstractStickySessionsTest extends AbstractHazelcastSessio
             @Override
             public void run() {
                 try {
-                    executeRequest("read", SERVER_PORT_2, cookieStore);
-                    executeRequest("read", SERVER_PORT_2, cookieStore2);
+                    executeRequest("read", SERVER_PORT_2, manager1);
+                    executeRequest("read", SERVER_PORT_2, manager2);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -202,9 +204,9 @@ public abstract class AbstractStickySessionsTest extends AbstractHazelcastSessio
         }
 
         //then
-        String value = executeRequest("read", SERVER_PORT_2, cookieStore);
+        String value = executeRequest("read", SERVER_PORT_2, manager1);
         assertEquals("value", value);
-        String value2 = executeRequest("read", SERVER_PORT_2, cookieStore2);
+        String value2 = executeRequest("read", SERVER_PORT_2, manager2);
         assertEquals("value", value2);
     }
 

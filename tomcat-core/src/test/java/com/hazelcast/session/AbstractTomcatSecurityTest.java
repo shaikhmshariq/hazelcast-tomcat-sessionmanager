@@ -1,10 +1,12 @@
 package com.hazelcast.session;
 
 import com.hazelcast.core.Hazelcast;
-import org.apache.http.client.CookieStore;
-import org.apache.http.impl.client.BasicCookieStore;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookieStore;
 
 import static org.junit.Assert.assertTrue;
 
@@ -25,9 +27,9 @@ public abstract class AbstractTomcatSecurityTest extends AbstractHazelcastSessio
 
     @Test
     public void testGetProtectedResourceFormLogin() throws Exception {
-        CookieStore cookieStore = new BasicCookieStore();
-
-        assertTrue(executeRequest("secureEndpoint", SERVER_PORT_1, cookieStore).contains("redirected to LoginServlet"));
+        CookieHandler.setDefault(new CookieManager());
+        CookieStore cookieStore = ((CookieManager) CookieHandler.getDefault()).getCookieStore();
+        assertTrue(executeRequest("secureEndpoint", SERVER_PORT_1,CookieHandler.getDefault()).contains("redirected to LoginServlet"));
     }
 
     protected abstract WebContainerConfigurator<?> getTomcatConfigurator(String appName);

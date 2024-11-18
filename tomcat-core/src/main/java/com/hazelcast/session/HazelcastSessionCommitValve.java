@@ -15,6 +15,7 @@
 
 package com.hazelcast.session;
 
+import jakarta.servlet.ServletException;
 import org.apache.catalina.Session;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
@@ -22,7 +23,7 @@ import org.apache.catalina.valves.ValveBase;
 import org.apache.juli.logging.Log;
 import org.apache.juli.logging.LogFactory;
 
-import javax.servlet.ServletException;
+
 import java.io.IOException;
 
 public class HazelcastSessionCommitValve extends ValveBase {

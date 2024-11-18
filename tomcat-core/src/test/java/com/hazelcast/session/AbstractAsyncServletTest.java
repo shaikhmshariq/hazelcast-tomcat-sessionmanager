@@ -1,12 +1,14 @@
 package com.hazelcast.session;
 
 import com.hazelcast.core.Hazelcast;
-import org.apache.http.client.CookieStore;
-import org.apache.http.impl.client.BasicCookieStore;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookieStore;
 
 import static org.junit.Assert.assertEquals;
 
@@ -33,8 +35,8 @@ public abstract class AbstractAsyncServletTest extends AbstractHazelcastSessions
 
     @Test
     public void testReadWriteRead() throws Exception {
-        CookieStore cookieStore = new BasicCookieStore();
-        String value = executeRequest("", SERVER_PORT_1, cookieStore);
+        CookieHandler.setDefault(new CookieManager());
+        String value = executeRequest("", SERVER_PORT_1,CookieHandler.getDefault());
         assertEquals(value, "OK");
     }
 }

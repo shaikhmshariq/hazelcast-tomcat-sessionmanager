@@ -20,11 +20,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>Hazelcast Tomcat Session Manager(Tomcat-Core)</name>
-    <groupId>com.hazelcast</groupId>
     <artifactId>tomcat-core</artifactId>
     <packaging>jar</packaging>
     <properties>
-        <tomcat-version>6.0.41</tomcat-version>
+        <tomcat-version>11.0.0</tomcat-version>
         <!-- needed for checkstyle/findbugs -->
         <main.basedir>${project.parent.basedir}</main.basedir>
     </properties>
@@ -32,7 +31,7 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.tomcat</groupId>
-            <artifactId>catalina</artifactId>
+            <artifactId>tomcat-catalina</artifactId>
             <version>${tomcat-version}</version>
             <scope>provided</scope>
         </dependency>
@@ -78,7 +77,7 @@
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.3</version>
+                        <version>1.6.14</version>
                         <extensions>true</extensions>
                         <configuration>
                             <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
