@@ -8,7 +8,6 @@ import org.springframework.context.ApplicationContext;
 
 import java.net.CookieHandler;
 import java.net.CookieManager;
-import java.net.CookieStore;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;

@@ -28,7 +28,7 @@
 
 ***Features***
 
-- Seamless Tomcat 7, 8, 8.5 & 9 integration.
+- Seamless Tomcat 7, 8, 8.5, 9 & 11 integration.
 - Support for sticky and non-sticky sessions.
 - Tomcat failover.
 - Deferred write for performance boost.
@@ -73,7 +73,7 @@ The following steps configure a sample P2P for Hazelcast Session Replication.
 1. Go to <a href="http://www.hazelcast.org/" target="_blank">hazelcast.org</a> and download the latest Hazelcast.
 2. Unzip the Hazelcast zip file into the folder `$HAZELCAST_ROOT`.
 3. Go to <a href="https://github.com/hazelcast/hazelcast-tomcat-sessionmanager/releases" target="_blank">hazelcast-tomcat-sessionmanager</a> repository and download the latest version.
-4. Put `$HAZELCAST_ROOT/lib/hazelcast-all-`<*version*>`.jar`,   and `hazelcast-tomcat`<*tomcatversion*>`-sessionmanager-`<*version*>`.jar` and `hazelcast.xml` (if you want to change defaults) in the folder `$CATALINA_HOME/lib/`.
+4. Put `$HAZELCAST_ROOT/lib/hazelcast-`<*version*>`.jar`,   and `hazelcast-tomcat`<*tomcatversion*>`-sessionmanager-`<*version*>`.jar` and `hazelcast.xml` (if you want to change defaults) in the folder `$CATALINA_HOME/lib/`.
 
 5. Put a `<Listener>` element into the file `$CATALINA_HOME$/conf/server.xml` as shown below.
 
